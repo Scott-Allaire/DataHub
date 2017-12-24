@@ -16,4 +16,8 @@ public class User {
 
     @Column(nullable = false)
     public String password;
+
+    @Column(nullable = false)
+    public Boolean enabled;
+
 }

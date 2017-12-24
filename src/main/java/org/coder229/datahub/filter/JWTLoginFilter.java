@@ -1,6 +1,7 @@
 package org.coder229.datahub.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.coder229.datahub.model.User;
 import org.coder229.datahub.service.TokenAuthenticationService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,7 +32,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
 
-        AccountCredentials creds = new ObjectMapper().readValue(request.getInputStream(), AccountCredentials.class);
+        User creds = new ObjectMapper().readValue(request.getInputStream(), User.class);
 
         return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(
                 creds.username, creds.password, Collections.emptyList()));
@@ -42,11 +43,6 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
                                             FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
         tokenAuthenticationService.addAuthentication(response, authResult.getName());
-    }
-
-    public static class AccountCredentials {
-        public String username;
-        public String password;
     }
 }
 

@@ -10,6 +10,8 @@ import org.coder229.datahub.model.Source;
 import org.coder229.datahub.repository.ReadingRepository;
 import org.coder229.datahub.repository.SourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -73,5 +75,9 @@ public class ReadingService {
                 readingRepository.save(humidityReading),
                 readingRepository.save(temperatureReading)
         );
+    }
+
+    public Page<Reading> getReadings(Pageable pageable) {
+        return readingRepository.findAll(pageable);
     }
 }

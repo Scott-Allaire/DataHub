@@ -20,13 +20,7 @@ public class TokenAuthenticationService {
     private String secret;
 
     public void addAuthentication(HttpServletResponse response, String name) {
-        ZonedDateTime expiration = ZonedDateTime.now().plusDays(7);
-        String jwt = Jwts.builder()
-                .setSubject(name)
-                .setExpiration(Date.from(expiration.toInstant()))
-                .signWith(SignatureAlgorithm.HS512, secret)
-                .compact();
-        response.addHeader("Authorization", "Bearer " + jwt);
+        response.addHeader("Authorization", "Bearer " + makeToken(name));
     }
 
     public Authentication getAuthentication(HttpServletRequest request) {
@@ -44,5 +38,15 @@ public class TokenAuthenticationService {
         }
 
         return null;
+    }
+
+
+    public String makeToken(String username) {
+        ZonedDateTime expiration = ZonedDateTime.now().plusDays(7);
+        return Jwts.builder()
+                .setSubject(username)
+                .setExpiration(Date.from(expiration.toInstant()))
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
     }
 }

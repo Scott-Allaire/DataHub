@@ -16,13 +16,13 @@ import org.springframework.messaging.MessageHandler;
 @Configuration
 public class MqttConfig {
 
-    @Value("mqtt.url")
+    @Value("${mqtt.url}")
     private String mqttUrl;
 
-    @Value("mqtt.topic")
+    @Value("${mqtt.topic}")
     private String mqttTopic;
 
-    @Value("mqtt.client.id")
+    @Value("${mqtt.client.id}")
     private String mqttClientId;
 
     @Bean

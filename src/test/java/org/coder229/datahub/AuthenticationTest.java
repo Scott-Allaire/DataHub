@@ -1,23 +1,20 @@
 package org.coder229.datahub;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.coder229.datahub.model.User;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.context.embedded.LocalServerPort;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.CoreMatchers.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthenticationTest {
-    @LocalServerPort
-    int port;
+public class AuthenticationTest extends IntegrationTest {
 
     @Test
-    public void login() {
-        String body = "{\"username\":\"admin\",\"password\":\"password\"}";
+    public void login() throws Exception {
+        User user = getUser();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String body = objectMapper.writeValueAsString(user);
         given()
                 .port(port)
                 .body(body)
@@ -28,4 +25,5 @@ public class AuthenticationTest {
         .assertThat()
                 .header("Authorization", notNullValue());
     }
+
 }
