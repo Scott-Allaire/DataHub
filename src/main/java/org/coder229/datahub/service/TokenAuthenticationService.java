@@ -4,6 +4,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.coder229.datahub.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +24,9 @@ public class TokenAuthenticationService {
     @Value("${app.security.secret}")
     private String secret;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public void addAuthentication(HttpServletResponse response, String name) {
         response.addHeader("Authorization", "Bearer " + makeToken(name));
     }
@@ -30,14 +35,16 @@ public class TokenAuthenticationService {
         try {
             String token = request.getHeader("Authorization");
             if (token != null) {
-                String user = Jwts.parser()
+                String username = Jwts.parser()
                         .setSigningKey(secret)
                         .parseClaimsJws(token.replace("Bearer", ""))
                         .getBody()
                         .getSubject();
 
-                if (user != null) {
-                    return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+                if (username != null) {
+                    return userRepository.findByUsername(username)
+                            .map(user -> new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList()))
+                            .orElseThrow(() -> new RuntimeException("User not found"));
                 }
             }
         } catch (Exception e) {
