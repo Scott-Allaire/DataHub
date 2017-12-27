@@ -2,8 +2,6 @@ package org.coder229.datahub.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -17,8 +15,10 @@ public class Reading {
     public Long id;
 
     @Column
-    @Enumerated(EnumType.STRING)
-    public ReadingType type;
+    public String category;
+
+    @Column
+    public String code;
 
     @Column
     public String value;
@@ -27,7 +27,7 @@ public class Reading {
     public String units;
 
     @Column
-    public ZonedDateTime dateTime;
+    public ZonedDateTime effective;
 
     @ManyToOne
     @JoinColumn

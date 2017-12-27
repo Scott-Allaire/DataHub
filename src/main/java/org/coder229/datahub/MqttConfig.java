@@ -1,5 +1,7 @@
 package org.coder229.datahub;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.coder229.datahub.service.ReadingService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -15,12 +17,13 @@ import org.springframework.messaging.MessageHandler;
 
 @Configuration
 public class MqttConfig {
+    protected final Log logger = LogFactory.getLog(getClass());
 
     @Value("${mqtt.url}")
     private String mqttUrl;
 
-    @Value("${mqtt.topic}")
-    private String mqttTopic;
+    @Value("${mqtt.topics}")
+    private String mqttTopics;
 
     @Value("${mqtt.client.id}")
     private String mqttClientId;
@@ -32,8 +35,9 @@ public class MqttConfig {
 
     @Bean
     public MessageProducer messageProducer() {
+        String[] topics = mqttTopics.split(",");
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(mqttUrl, mqttClientId, mqttTopic);
+                new MqttPahoMessageDrivenChannelAdapter(mqttUrl, mqttClientId, topics);
 
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setOutputChannel(messageChannel());
@@ -44,9 +48,8 @@ public class MqttConfig {
     @ServiceActivator(inputChannel = "messageChannel")
     public MessageHandler messageHandler(ReadingService readingService) {
         return (Message<?> message) -> {
-            // TODO client ID of sender?
-            String sourceName = message.getHeaders().getId().toString();
-
+            String sourceName = (String) message.getHeaders().get("mqtt_topic");
+            logger.info("Received message from " + sourceName);
             readingService.process(message.getPayload(), sourceName);
         };
     }
