@@ -19,5 +19,4 @@ public class User {
 
     @Column(nullable = false)
     public Boolean enabled;
-
 }

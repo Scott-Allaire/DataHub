@@ -20,4 +20,30 @@ public class ReadingControllerTest extends IntegrationTest {
             .assertThat()
             .body("totalElements", greaterThan(0));
     }
+
+    @Test
+    public void getReadingsWithStart() {
+        given()
+            .port(port)
+            .header("Authorization", "Bearer " + getToken())
+        .when()
+            .get("/reading?start=2017-12-12")
+        .then()
+            .statusCode(200)
+            .assertThat()
+            .body("totalElements", greaterThan(0));
+    }
+
+    @Test
+    public void getReadingsWithStartAndEnd() {
+        given()
+            .port(port)
+            .header("Authorization", "Bearer " + getToken())
+        .when()
+            .get("/reading?start=2017-12-12&end=2018-01-01")
+        .then()
+            .statusCode(200)
+            .assertThat()
+            .body("totalElements", greaterThan(0));
+    }
 }

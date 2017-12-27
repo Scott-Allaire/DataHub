@@ -6,16 +6,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.coder229.datahub.model.Reading;
 import org.coder229.datahub.model.Source;
+import org.coder229.datahub.model.specs.ReadingSpecs;
 import org.coder229.datahub.repository.ReadingRepository;
 import org.coder229.datahub.repository.SourceRepository;
 import org.coder229.datahub.service.messages.MessageProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,5 +64,13 @@ public class ReadingService {
 
     public Page<Reading> getReadings(Pageable pageable) {
         return readingRepository.findAll(pageable);
+    }
+
+    public Page<Reading> getReadings(LocalDate start, LocalDate end, String timezone, Pageable pageable) {
+        ZoneId zoneId = ZoneId.of(timezone);
+        ZonedDateTime actualStart = start.atStartOfDay().atZone(zoneId);
+        ZonedDateTime actualEnd = end.plusDays(1).atStartOfDay().atZone(zoneId);
+        Specifications<Reading> specs = Specifications.where(ReadingSpecs.withEffectiveBetween(actualStart, actualEnd));
+        return readingRepository.findAll(specs, pageable);
     }
 }
