@@ -3,8 +3,16 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const helmet = require('helmet');
+const session = require('express-session');
+const cors = require('cors');
+// const csurf = require('csurf');
+const sassMiddleware = require('node-sass-middleware');
+
+require('dotenv').config();
 
 const indexRouter = require('./routes/index');
+const loginRouter = require('./routes/login');
 const usersRouter = require('./routes/users');
 const readingsRouter = require('./routes/readings');
 const app = express();
@@ -13,13 +21,33 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// setup middleware
+app.use(helmet());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
+app.use(sassMiddleware({
+    /* Options */
+    src: path.join(__dirname, 'views'),
+    dest: path.join(__dirname, 'public', 'stylesheets'),
+    debug: true,
+    outputStyle: 'compressed',
+    prefix:  '/stylesheets'  // Where prefix is at <link rel="stylesheets" href="prefix/style.css"/>
+}));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    name: 'DH_SESSION',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+}))
+app.use(cors());
+// app.use(csurf());
 
 app.use('/', indexRouter);
+app.use('/login', loginRouter);
 app.use('/users', usersRouter);
 app.use('/readings', readingsRouter);
 
