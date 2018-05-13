@@ -6,10 +6,10 @@ const logger = require('morgan');
 const helmet = require('helmet');
 const session = require('express-session');
 const cors = require('cors');
-// const csurf = require('csurf');
 const sassMiddleware = require('node-sass-middleware');
 
 require('dotenv').config();
+require('./helpers/queueHelper').init();
 
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
@@ -42,13 +42,15 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: { secure: true }
-}))
+}));
 app.use(cors());
-// app.use(csurf());
 
+// HTML routes
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/users', usersRouter);
+
+// REST routes
 app.use('/readings', readingsRouter);
 
 // catch 404 and forward to error handler

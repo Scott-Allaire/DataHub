@@ -2,7 +2,7 @@ const mysql = require('mysql');
 
 require('dotenv').config();
 
-const pool = mysql.createPool({
+const poolHelper = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -10,7 +10,7 @@ const pool = mysql.createPool({
 });
 
 const getConnection = (callback) => {
-    pool.getConnection(function (err, connection) {
+    poolHelper.getConnection(function (err, connection) {
         callback(err, connection);
         connection.release();
     });

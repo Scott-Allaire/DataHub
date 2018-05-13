@@ -1,15 +1,13 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-const pool = require('../helpers/pool');
+const pool = require('../helpers/poolHelper');
 
 router.get('/', function(req, res, next) {
     pool.getConnection((err, conn) => {
-        conn.query('select count(*) ct from reading', (err, rows) => {
-            res.render('readings', {
-                title: 'Readings',
-                count: rows[0].ct
-            });
+
+        conn.query('select * from reading order by received desc', (err, rows) => {
+            res.json(rows);
         });
     });
 });
