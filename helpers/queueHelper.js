@@ -23,6 +23,10 @@ const init = (callback) => {
         console.log("Listening for messages on " + topic);
     });
 
+    client.on('error', function (error) {
+        console.log("Error connecting to MQTT server at " + process.env.MQTT_HOST + ":" + process.env.MQTT_PORT, error);
+    });
+
     client.on('message', function (topic, message) {
         console.log('Received: ' + message.toString());
         const json = JSON.parse(message);
