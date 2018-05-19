@@ -2,4 +2,6 @@ node_modules/
 .idea/
 
 .env
+tmp/
 style.css
+docker-compose.override.yml

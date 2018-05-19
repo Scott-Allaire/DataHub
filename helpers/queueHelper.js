@@ -5,29 +5,37 @@ const pool = require('./poolHelper');
 
 require('dotenv').config();
 
-const INSERT_READING_SQL = 'INSERT INTO reading(code, source, value, epoch, received) VALUES (?, ?, ?, ?, ?)';
+const brokerUrl = 'mqtt://' + process.env.MQTT_HOST + ":" + process.env.MQTT_PORT;
+const brokerOptions = {
+    connectTimeout: 10
+};
+const INSERT_READING_SQL = 'INSERT INTO reading(code, source, value, epoch, received) ' +
+    'VALUES (?, ?, ?, ?, ?)';
 
 function insertReading(conn, code, source, value, epoch) {
     const received = moment().format();
-    conn.query(INSERT_READING_SQL, [code, source, value, epoch, received], (err, rows) => {
-        if (err) throw err;
+    pool.getConnection((err, conn) => {
+        conn.query(INSERT_READING_SQL, [code, source, value, epoch, received], (err, rows) => {
+            if (err) throw err;
+        });
     });
 }
 
 const init = (callback) => {
-    const client = mqtt.connect('mqtt://' + process.env.MQTT_HOST + ":" + process.env.MQTT_PORT);
+    console.log("Attempting to connect to MQTT server at " + brokerUrl);
+    const client = mqtt.connect(brokerUrl, brokerOptions);
     const topic = 'topic/weather';
 
-    client.on('connect', function () {
+    client.on('error', (error) => {
+        console.log("Error connecting to MQTT server at " + brokerUrl, error);
+    });
+
+    client.on('connect', () => {
         client.subscribe(topic);
         console.log("Listening for messages on " + topic);
     });
 
-    client.on('error', function (error) {
-        console.log("Error connecting to MQTT server at " + process.env.MQTT_HOST + ":" + process.env.MQTT_PORT, error);
-    });
-
-    client.on('message', function (topic, message) {
+    client.on('message', (topic, message) => {
         console.log('Received: ' + message.toString());
         const json = JSON.parse(message);
 

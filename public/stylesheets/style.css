@@ -1,1 +1,8 @@
-body{margin:0 1em;padding:1em 0;font:14px "Lucida Grande", Helvetica, Arial, sans-serif;min-height:100vh}.container{display:flex;flex-direction:column;flex-grow:1}.header,.footer{background-color:green}.main{display:flex;flex-direction:row}.sidebar{background-color:red;min-width:100px;flex-grow:1}.content{background-color:blue;flex-grow:2}
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}

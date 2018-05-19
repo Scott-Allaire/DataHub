@@ -11,8 +11,12 @@ const poolHelper = mysql.createPool({
 
 const getConnection = (callback) => {
     poolHelper.getConnection(function (err, connection) {
-        callback(err, connection);
-        connection.release();
+        if (connection) {
+            callback(err, connection);
+            connection.release();
+        } else {
+            console.log(err);
+        }
     });
 };
 

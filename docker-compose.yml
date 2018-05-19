@@ -1,0 +1,19 @@
+version: '2.1'
+services:
+  dhmqtt:
+    container_name: dhmqtt
+    image: toke/mosquitto
+    networks:
+      - app_net
+    ports:
+      - "32768:1883"
+      - "9001:9001"
+  dhnode:
+    build: .
+    container_name: dhnode
+    networks:
+      - app_net
+networks:
+  app_net:
+    driver: bridge
+    enable_ipv6: false
