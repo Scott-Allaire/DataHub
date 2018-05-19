@@ -4,7 +4,7 @@ services:
     container_name: dhmqtt
     image: toke/mosquitto
     networks:
-      - app_net
+      - iot
     ports:
       - "32768:1883"
       - "9001:9001"
@@ -12,8 +12,8 @@ services:
     build: .
     container_name: dhnode
     networks:
-      - app_net
+      - iot
 networks:
-  app_net:
+  iot:
     driver: bridge
     enable_ipv6: false

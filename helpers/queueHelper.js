@@ -24,19 +24,18 @@ function insertReading(conn, code, source, value, epoch) {
 const init = (callback) => {
     console.log("Attempting to connect to MQTT server at " + brokerUrl);
     const client = mqtt.connect(brokerUrl, brokerOptions);
-    const topic = 'topic/weather';
 
     client.on('error', (error) => {
         console.log("Error connecting to MQTT server at " + brokerUrl, error);
     });
 
     client.on('connect', () => {
-        client.subscribe(topic);
-        console.log("Listening for messages on " + topic);
+        client.subscribe('topic/+');
+        console.log("Listening for messages on " + 'topic/+');
     });
 
     client.on('message', (topic, message) => {
-        console.log('Received: ' + message.toString());
+        console.log('Received: ' + message.toString() + ' from ' + topic);
         const json = JSON.parse(message);
 
         pool.getConnection((err, conn) => {
@@ -51,6 +50,9 @@ const init = (callback) => {
             }
             if (json.feels_like) {
                 insertReading(conn, 'feels_like', topic, json.feels_like, json.epoch);
+            }
+            if (json.pressure) {
+                insertReading(conn, 'pressure', topic, json.tempc, json.epoch);
             }
         });
     })
