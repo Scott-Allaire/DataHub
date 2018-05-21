@@ -7,7 +7,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 require('dotenv').config();
-// require('./helpers/queueHelper').init();
+require('./helpers/queueHelper').init();
 
 const indexRouter = require('./routes/index');
 const readingsRouter = require('./routes/readings');
