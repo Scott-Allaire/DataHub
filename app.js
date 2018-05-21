@@ -4,16 +4,12 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const helmet = require('helmet');
-// const session = require('express-session');
 const cors = require('cors');
-// const sassMiddleware = require('node-sass-middleware');
 
 require('dotenv').config();
-require('./helpers/queueHelper').init();
+// require('./helpers/queueHelper').init();
 
 const indexRouter = require('./routes/index');
-// const loginRouter = require('./routes/login');
-// const usersRouter = require('./routes/users');
 const readingsRouter = require('./routes/readings');
 const app = express();
 
@@ -27,28 +23,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
-// app.use(sassMiddleware({
-//     /* Options */
-//     src: path.join(__dirname, 'views'),
-//     dest: path.join(__dirname, 'public', 'stylesheets'),
-//     debug: true,
-//     outputStyle: 'compressed',
-//     prefix:  '/stylesheets'  // Where prefix is at <link rel="stylesheets" href="prefix/style.css"/>
-// }));
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(session({
-//     secret: process.env.SESSION_SECRET,
-//     name: 'DH_SESSION',
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: { secure: true }
-// }));
 app.use(cors());
 
 // HTML routes
 app.use('/', indexRouter);
-// app.use('/login', loginRouter);
-// app.use('/users', usersRouter);
 
 // REST routes
 app.use('/readings', readingsRouter);

@@ -21,7 +21,7 @@ function insertReading(conn, code, source, value, epoch) {
     });
 }
 
-const init = (callback) => {
+const init = () => {
     console.log("Attempting to connect to MQTT server at " + brokerUrl);
     const client = mqtt.connect(brokerUrl, brokerOptions);
 
@@ -35,24 +35,25 @@ const init = (callback) => {
     });
 
     client.on('message', (topic, message) => {
-        console.log('Received: ' + message.toString() + ' from ' + topic);
+        const source = topic.indexOf('/') >= 0 ? topic.split('/')[1] : topic;
+        console.log('Received: ' + message.toString() + ' from ' + source);
         const json = JSON.parse(message);
 
         pool.getConnection((err, conn) => {
             if (json.tempf) {
-                insertReading(conn, 'tempf', topic, json.tempf, json.epoch);
+                insertReading(conn, 'tempf', source, json.tempf, json.epoch);
             }
             if (json.tempc) {
-                insertReading(conn, 'tempc', topic, json.tempc, json.epoch);
+                insertReading(conn, 'tempc', source, json.tempc, json.epoch);
             }
             if (json.hum) {
-                insertReading(conn, 'hum', topic, json.hum, json.epoch);
+                insertReading(conn, 'hum', source, json.hum, json.epoch);
             }
             if (json.feels_like) {
-                insertReading(conn, 'feels_like', topic, json.feels_like, json.epoch);
+                insertReading(conn, 'feels_like', source, json.feels_like, json.epoch);
             }
             if (json.pressure) {
-                insertReading(conn, 'pressure', topic, json.tempc, json.epoch);
+                insertReading(conn, 'pressure', source, json.pressure, json.epoch);
             }
         });
     })
