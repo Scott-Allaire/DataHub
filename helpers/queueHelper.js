@@ -55,6 +55,9 @@ const init = () => {
             if (json.pressure) {
                 insertReading(conn, 'pressure', source, json.pressure, json.epoch);
             }
+            if (json.lowbatt) {
+                insertReading(conn, 'lowbatt', source, json.lowbatt, json.epoch);
+            }
         });
     })
 };
