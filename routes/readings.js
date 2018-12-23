@@ -20,9 +20,9 @@ router.get('/:source', function (req, res) {
     const source = req.params.source;
 
     pool.getConnection((err, conn) => {
-        const sql = 'select code, value, epoch, received from reading r1 ' +
-            'where source = ? and epoch = ( ' +
-            'select max(epoch) from reading r2 ' +
+        const sql = 'select code, value, received from reading r1 ' +
+            'where source = ? and received = ( ' +
+            'select max(received) from reading r2 ' +
             'where r2.source = r1.source ' +
             'and r2.code = r1.code)';
         conn.query(sql, [source], (err, rows) => {
