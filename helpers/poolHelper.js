@@ -10,6 +10,12 @@ const poolHelper = mysql.createPool({
 });
 
 const getConnection = (callback) => {
+    console.log("Attempting to connect to MySQL: ", {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    });
     poolHelper.getConnection(function (err, connection) {
         if (connection) {
             callback(err, connection);
